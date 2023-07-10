@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helicone.web.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.helicone.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helicone.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helicone.web.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: init-db
+          image: postgres:15-alpine
+          imagePullPolicy: IfNotPresent
+          {{- with .Values.studio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- range $key, $value := .Values.helicone.web.environment }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helicone.web.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_USER
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              until pg_isready -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER); do
+              echo "Waiting for database to start..."
+              sleep 2
+              done
+            - echo "Database is ready"
+        - name: supabase-migration-runner
+          image: helicone/supabase-migration-runner:v2023.06.23
+          imagePullPolicy: IfNotPresent
+          {{- with .Values.studio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- range $key, $value := .Values.helicone.web.environment }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helicone.web.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
+        - name: clickhouse-migration-runner
+          image: helicone/clickhouse-migration-runner:v2023.06.23
+          imagePullPolicy: IfNotPresent
+          {{- with .Values.studio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: CLICKHOUSE_HOST
+              value: {{ tpl .Values.helicone.web.environment.CLICKHOUSE_HOST . }}
+            - name: CLICKHOUSE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_USER
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_PASSWORD
+          args:
+            - 'for file in /app/helicone/clickhouse/migrations/*; do cat "$file" | curl
+              ${CLICKHOUSE_HOST} --header "X-ClickHouse-User: ${CLICKHOUSE_USER}" --header
+              "X-ClickHouse-Key: ${CLICKHOUSE_PASSWORD}" --data-binary @-; done'
+          command:
+            - /bin/bash
+            - -c
+      containers:
+        - name: {{ include "helicone.web.name" $ }}
+          image: "{{ .Values.helicone.web.image.repository }}:{{ .Values.helicone.web.image.tag }}"
+          imagePullPolicy: {{ .Values.helicone.web.image.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.helicone.web.environment }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helicone.web.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: NEXT_PUBLIC_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-supabase
+                  key: ANON_KEY
+            - name: SUPABASE_SERVICE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-supabase
+                  key: SERVICE_ROLE_KEY
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_PASSWORD
+            - name: CLICKHOUSE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_USER
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_PASSWORD
+            - name: DATABASE_URL
+              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          {{- with .Values.studio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

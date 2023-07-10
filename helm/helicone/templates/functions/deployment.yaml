@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.functions.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.functions.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "supabase.functions.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.functions.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "supabase.functions.name" $ }}
+          image: "{{ .Values.functions.image.repository }}:{{ .Values.functions.image.tag }}"
+          imagePullPolicy: {{ .Values.functions.image.pullPolicy }}
+          args:
+          - start
+          - --main-service
+          - /home/deno/functions/main
+          command:
+          - edge-runtime
+          env:
+            {{- range $key, $value := .Values.functions.environment }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "supabase.functions.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-supabase
+                  key: ANON_KEY
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-supabase
+                  key: SERVICE_ROLE_KEY
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-rds
+                  key: POSTGRES_PASSWORD
+            - name: SUPABASE_DB_URL
+              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
+          ports:
+            - name: http
+              containerPort: 5001
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /home/deno/functions/main
+              name: index
+          {{- with .Values.functions.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: index
+          configMap:
+            name: {{ include "supabase.functions.fullname" . }}-index
+

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helicone.worker.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.helicone.worker.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helicone.worker.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helicone.worker.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "helicone.worker.name" $ }}
+          image: "{{ .Values.helicone.worker.image.repository }}:{{ .Values.helicone.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.helicone.worker.image.pullPolicy }}
+          args:
+          - env > .dev.vars && echo \"n\" | npx wrangler dev --local
+          command:
+          - /bin/bash
+          - -c
+          - -- 
+          env:
+            {{- range $key, $value := .Values.helicone.worker.environment }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "helicone.worker.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: NEXT_PUBLIC_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-supabase
+                  key: ANON_KEY
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-supabase
+                  key: SERVICE_ROLE_KEY
+            - name: CLICKHOUSE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_USER
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_PASSWORD
+          ports:
+            - name: http
+              containerPort: 8787
+              protocol: TCP
+          {{- with .Values.studio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

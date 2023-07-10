@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helicone.worker.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind:  Mapping
+      name: {{ include "helicone.worker.fullname" . }}-{{ .Values.Namespace }}-mapping
+      host: {{ .Values.helicone.worker.ingress.host }}
+      prefix: /
+      ambassador_id: ambassador-private
+      service: {{ include "helicone.worker.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.helicone.worker.ingress.port }}
+      timeout_ms: 100000
+spec:
+  type: {{ .Values.helicone.worker.service.type }}
+  ports:
+    - port: {{ .Values.helicone.worker.service.port }}
+      targetPort: 8787
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "helicone.worker.selectorLabels" . | nindent 4 }}

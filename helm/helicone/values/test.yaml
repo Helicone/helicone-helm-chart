@@ -1,0 +1,9 @@
+secretStore:
+  name: vault
+  path: "{{ .Release.Namespace }}/{{ .Release.Name }}"
+
+global:
+  baseDomain: 
+
+database:
+  host: '{{ include "supabase.db.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'

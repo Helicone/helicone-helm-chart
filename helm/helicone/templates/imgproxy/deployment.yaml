@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.imgproxy.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.imgproxy.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "supabase.imgproxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.imgproxy.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "supabase.imgproxy.name" $ }}
+          image: "{{ .Values.imgproxy.image.repository }}:{{ .Values.imgproxy.image.tag }}"
+          imagePullPolicy: {{ .Values.imgproxy.image.pullPolicy }}
+          env:
+            {{- range $key, $value := .Values.imgproxy.environment }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "supabase.imgproxy.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 5001
+              protocol: TCP
+          {{- with .Values.imgproxy.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

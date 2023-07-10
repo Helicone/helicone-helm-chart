@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helicone.clickhouse.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.helicone.clickhouse.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helicone.clickhouse.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helicone.clickhouse.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "helicone.clickhouse.name" $ }}
+          image: "{{ .Values.helicone.clickhouse.image.repository }}:{{ .Values.helicone.clickhouse.image.tag }}"
+          imagePullPolicy: {{ .Values.helicone.clickhouse.image.pullPolicy }}
+          env:
+            - name: CLICKHOUSE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_USER
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  key: CLICKHOUSE_PASSWORD
+          ports:
+            - name: http
+              containerPort: 8123
+              protocol: TCP
+          volumeMounts:
+            {{- with .Values.db.volumeMounts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.studio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- with .Values.db.volumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}

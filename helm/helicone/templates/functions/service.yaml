@@ -1,0 +1,28 @@
+{{- if .Values.functions.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "supabase.functions.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind:  Mapping
+      name: {{ include "supabase.functions.fullname" . }}-{{ .Values.Namespace }}-mapping
+      host: {{ .Values.functions.ingress.host }}
+      prefix: /
+      ambassador_id: ambassador-private
+      service: {{ include "supabase.functions.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.functions.ingress.port }}
+      timeout_ms: 100000
+spec:
+  type: {{ .Values.functions.service.type }}
+  ports:
+    - port: {{ .Values.functions.service.port }}
+      targetPort: 9000
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "supabase.functions.selectorLabels" . | nindent 4 }}
+{{- end }}

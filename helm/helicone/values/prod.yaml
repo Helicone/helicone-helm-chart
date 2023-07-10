@@ -1,0 +1,9 @@
+secretStore:
+  name: helicone-vault
+  path: "prod/helicone/"
+
+global:
+  baseDomain: 
+
+database:
+  host: '{{ include "supabase.db.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
