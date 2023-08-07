@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.functions.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.functions.replicaCount }}
   selector:
@@ -45,12 +45,12 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: SUPABASE_DB_URL
               value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)

@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.rest.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.rest.autoscaling.enabled }}
   replicas: {{ .Values.rest.replicaCount }}
@@ -44,7 +44,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: PGRST_DB_URI
               value: $(DB_DRIVER)://authenticator:$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)

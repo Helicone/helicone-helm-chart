@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.kong.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.kong.autoscaling.enabled }}
   replicas: {{ .Values.kong.replicaCount }}

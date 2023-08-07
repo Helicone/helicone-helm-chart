@@ -4,18 +4,7 @@ kind: Service
 metadata:
   name: {{ include "supabase.studio.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
-  annotations:
-    getambassador.io/config: |
-      ---
-      apiVersion: ambassador/v1
-      kind:  Mapping
-      name: {{ include "supabase.studio.fullname" . }}-{{ .Values.environment }}-mapping
-      host: {{ .Values.studio.ingress.host }}
-      prefix: /
-      ambassador_id: ambassador-private
-      service: {{ include "supabase.studio.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.studio.ingress.port }}
-      timeout_ms: 100000
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.studio.service.type }}
   ports:

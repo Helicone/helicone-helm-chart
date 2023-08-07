@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.db.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.db.autoscaling.enabled }}
   replicas: {{ .Values.db.replicaCount }}
@@ -44,12 +44,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: PGPASSWORD
               value: $(POSTGRES_PASSWORD)
@@ -74,8 +74,9 @@ spec:
               {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- if .Values.db.persistence.enabled }}
-            - mountPath: {{ .Values.db.storage.mountPath }}
+            - mountPath: {{ .Values.db.persistence.mountPath }}
               name: postgres-volume
+              subPath: {{ .Values.db.persistence.subPath }}
             {{- end }}
           {{- with .Values.db.resources }}
           resources:

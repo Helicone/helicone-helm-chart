@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "helicone.worker.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.helicone.worker.replicaCount }}
   selector:
@@ -56,7 +56,7 @@ spec:
             - name: http
               containerPort: 8787
               protocol: TCP
-          {{- with .Values.studio.resources }}
+          {{- with .Values.helicone.worker.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
