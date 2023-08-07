@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.imgproxy.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.imgproxy.replicaCount }}
   selector:

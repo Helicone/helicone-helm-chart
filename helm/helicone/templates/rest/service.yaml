@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ include "supabase.rest.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.rest.service.type }}
   ports:

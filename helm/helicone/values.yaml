@@ -1,36 +1,25 @@
 # File structure of values.yaml:
-# |-- 1. Database
-# |-- 2. Studio
-# |-- 3. Auth
-# |-- 4. Rest
-# |-- 5. Realtime
-# |-- 6. Meta
-# |-- 7. Storage
-# |-- 8. Kong
-# |-- 9. Imgproxy
+# |--  1. Database
+# |--  2. Studio
+# |--  3. Auth
+# |--  4. Rest
+# |--  5. Realtime
+# |--  6. Meta
+# |--  7. Storage
+# |--  8. Kong
+# |--  9. Imgproxy
 # |-- 10. Functions
 # |-- 11. Helicone
-# |----- * Web
-# |----- * Worker
-# |----- * Clickhouse
+# |-- 12. Clickhouse
 
 global:
-  baseDomain: company.com
+  baseDomain: EXAMPLE.COM
   
 database:
+  host: '{{ include "supabase.db.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
   port: "5432"
   name: "postgres"
 
-serviceAccount:
-  name: "helicone-vault-auth"
-
-secretStore:
-  name: "helicone-vault"
-
-# Optional: Postgres Database
-# A standalone Postgres database configured to work with Supabase services. 
-# You can spin up any other Postgres database container if required. 
-# If so, make sure to adjust DB_HOST accordingly to point to the right database service.
 db:
   enabled: true # Disable the database provisioning
   image:
@@ -43,12 +32,11 @@ db:
   fullnameOverride: ""
   persistence: 
     enabled: false
-    storageClassName: ""
+    mountPath: /var/lib/postgresql/data
+    subPath: postgres
+    storageClassName: "ebs-csi-gp3"
+    size: 1Gi
     annotations: {}
-    size: 10Gi
-    accessModes:
-      - ReadWriteOnce
-    class: ""
   podAnnotations: {}
   podSecurityContext: {}
     # fsGroup: 2000
@@ -68,9 +56,6 @@ db:
     POSTGRES_PORT: "{{ tpl .Values.database.port . }}"
     PGDATABASE: "{{ tpl .Values.database.name . }}"
     POSTGRES_DB: "{{ tpl .Values.database.name . }}"
-  ingress:
-    host: supabase-db.company.com
-    port: 5432
   resources:
   # TODO properly size
     limits:
@@ -119,10 +104,6 @@ studio:
     STUDIO_PG_META_URL: 'http://{{ include "supabase.meta.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8080'
     DEFAULT_ORGANIZATION_NAME: "Default Organization"
     DEFAULT_PROJECT_NAME: "Default Project"
-  ingress:
-    enabled: true
-    host: supabase-studio.company.com
-    port: 3000
   # volumeMounts:
   #   - name: volume_name
   #     mountPath: /path/to/my/secret
@@ -185,8 +166,8 @@ auth:
     GOTRUE_API_HOST: "0.0.0.0"
     GOTRUE_API_PORT: "9999"
     API_EXTERNAL_URL: "https://supabase.{{ .Values.global.baseDomain }}"
-    GOTRUE_SITE_URL: "https://supabase-studio.{{ .Values.global.baseDomain }}"
-    GOTRUE_URI_ALLOW_LIST: ""
+    GOTRUE_SITE_URL: "https://helicone.{{ .Values.global.baseDomain }}"
+    GOTRUE_URI_ALLOW_LIST: "*"
     GOTRUE_DB_DRIVER: postgres
     GOTRUE_DISABLE_SIGNUP: "false"
     GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
@@ -195,16 +176,15 @@ auth:
     GOTRUE_JWT_EXP: "3600"
     GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
     GOTRUE_MAILER_AUTOCONFIRM: "false"
-    GOTRUE_SMTP_ADMIN_EMAIL: "SMTP_ADMIN_MAIL"
-    GOTRUE_SMTP_HOST: "SMTP_HOST"
+    GOTRUE_SMTP_HOST: "smtp.gmail.com"
     GOTRUE_SMTP_PORT: "587"
-    GOTRUE_SMTP_SENDER_NAME: "SMTP_SENDER_NAME"
     GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
     GOTRUE_SMS_AUTOCONFIRM: "false"
     GOTRUE_MAILER_URLPATHS_INVITE: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
     GOTRUE_MAILER_URLPATHS_CONFIRMATION: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
     GOTRUE_MAILER_URLPATHS_RECOVERY: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
     GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
+    
   resources:     
     # TODO properly size this
     limits:
@@ -362,15 +342,6 @@ meta:
     PG_META_DB_NAME: "{{ tpl .Values.database.name . }}"
     PG_META_DB_USER: supabase_admin
     PG_META_PORT: "8080"
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-    hosts: []
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
   # volumeMounts:
   #   - name: volume_name
   #     mountPath: /path/to/my/secret
@@ -499,9 +470,6 @@ kong:
     KONG_PLUGINS: request-transformer,cors,key-auth,acl      
     KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
     KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
-  ingress:
-    host: "supabase.company.com"
-    port: 8000
   resources:   
   # TODO properly size this
     limits:
@@ -569,9 +537,6 @@ functions:
     DB_DRIVER: postgres
     DB_NAME: "{{ tpl .Values.database.name . }}"
     VERIFY_JWT: "false"
-  ingress:
-    host: supabase-functions.company.com
-    port: 9002
   resources:   
   # TODO properly size this
     limits:
@@ -586,7 +551,7 @@ helicone:
     image:
       repository: helicone/web
       pullPolicy: IfNotPresent
-      tag: "v2023.06.23"
+      tag: "v2023.07.18.dev.0"
     replicaCount: 1
     nameOverride: ""
     fullnameOverride: ""
@@ -596,30 +561,26 @@ helicone:
     environment:
       NEXT_PUBLIC_SUPABASE_URL: "https://supabase.{{ .Values.global.baseDomain }}"
       SUPABASE_URL: 'http://{{ include "supabase.kong.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8000'
-      CLICKHOUSE_HOST: 'http://{{ include "helicone.clickhouse.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8123'
+      CLICKHOUSE_HOST: 'http://{{ include "clickhouse.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8123'
       # must match values set in .Values.auth 
       DB_HOST: "{{ tpl .Values.database.host . }}"
       DB_PORT: "{{ tpl .Values.database.port . }}"
       DB_DRIVER: postgres
       DB_NAME: "{{ tpl .Values.database.name . }}"
-    ingress:
-      enabled: true
-      host: helicone.company.com
-      port: 3000
     resources:   
       # TODO properly size this
       limits:
-        cpu: 1
-        memory: 1Gi
+        cpu: 2
+        memory: 10Gi
       requests:
-        cpu: 10m
-        memory: 128Mi
+        cpu: 50m
+        memory: 2Gi
 
   worker:
     image:
       repository: helicone/worker
       pullPolicy: IfNotPresent
-      tag: "v2023.06.23"
+      tag: "v2023.07.13"
     replicaCount: 1
     nameOverride: ""
     fullnameOverride: ""
@@ -628,11 +589,7 @@ helicone:
       port: 8787
     environment:
       SUPABASE_URL: 'http://{{ include "supabase.kong.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8000'
-      CLICKHOUSE_HOST: 'http://{{ include "helicone.clickhouse.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8123'
-    ingress:
-      enabled: true
-      host: helicone-worker.company.com
-      port: 8787
+      CLICKHOUSE_HOST: 'http://{{ include "clickhouse.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8123'
     resources:     
     # TODO properly size this
       limits:
@@ -642,29 +599,29 @@ helicone:
         cpu: 10m
         memory: 128Mi
 
-  clickhouse:
-    image:
-      repository: clickhouse/clickhouse-server
-      pullPolicy: IfNotPresent
-      tag: "23.4.2.11"
-    replicaCount: 1
-    nameOverride: ""
-    fullnameOverride: ""
-    service:
-      type: ClusterIP
-      port: 8123
-    environment:
-    volumeMounts:
-      - name: clickhouse
-        mountPath: /var/lib/clickhouse
-    volumes:
-      - name: clickhouse
-        emptyDir: {}
-    resources:   
-      # TODO properly size this
-      limits:
-        cpu: 1
-        memory: 1Gi
-      requests:
-        cpu: 10m
-        memory: 128Mi
+clickhouse:
+  image:
+    repository: clickhouse/clickhouse-server
+    pullPolicy: IfNotPresent
+    tag: "23.4.2.11"
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  service:
+    type: ClusterIP
+    port: 8123
+  environment:
+  volumeMounts:
+    - name: clickhouse
+      mountPath: /var/lib/clickhouse
+  volumes:
+    - name: clickhouse
+      emptyDir: {}
+  resources:   
+    # TODO properly size this
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 10m
+      memory: 128Mi

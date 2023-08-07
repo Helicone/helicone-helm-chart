@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.auth.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.auth.autoscaling.enabled }}
   replicas: {{ .Values.auth.replicaCount }}
@@ -49,7 +49,7 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_USER
           command: ["/bin/sh", "-c"]
           args:
@@ -76,22 +76,25 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: GOTRUE_DB_DATABASE_URL
               value: $(DB_DRIVER)://supabase_auth_admin:$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?search_path=auth&sslmode=$(DB_SSL)
-            - name: GOTRUE_DB_DRIVER
-              value: $(DB_DRIVER)
             - name: GOTRUE_JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ include "helicone.fullname" . }}-supabase
                   key: JWT_SECRET
+            - name: GOTRUE_SMTP_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helicone.fullname" . }}-smtp
+                  key: SMTP_USERNAME
             - name: GOTRUE_SMTP_USER
               valueFrom:
                 secretKeyRef:

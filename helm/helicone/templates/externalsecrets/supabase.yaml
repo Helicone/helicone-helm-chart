@@ -1,9 +1,0 @@
-apiVersion: secret-manager.itscontained.io/v1alpha1
-kind: ExternalSecret
-metadata:
-  name: {{ include "helicone.fullname" . }}-supabase
-spec:
-  storeRef:
-    name: {{ tpl .Values.secretStore.name . }}
-  dataFrom:
-    - name: {{ tpl .Values.secretStore.path . }}/supabase

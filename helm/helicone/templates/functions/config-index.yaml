@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: {{ include "supabase.functions.fullname" . }}-index
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 data:
   index.ts: |
     import { serve } from 'https://deno.land/std@0.131.0/http/server.ts'

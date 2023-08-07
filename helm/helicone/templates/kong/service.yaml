@@ -4,18 +4,7 @@ kind: Service
 metadata:
   name: {{ include "supabase.kong.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
-  annotations:
-    getambassador.io/config: |
-      ---
-      apiVersion: ambassador/v1
-      kind:  Mapping
-      name: {{ include "supabase.kong.fullname" . }}-{{ .Values.Namespace }}-mapping
-      host: {{ .Values.kong.ingress.host }}
-      prefix: /
-      ambassador_id: ambassador-private
-      service: {{ include "supabase.kong.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.kong.ingress.port }}
-      timeout_ms: 100000
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.kong.service.type }}
   ports:

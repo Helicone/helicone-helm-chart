@@ -30,14 +30,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "supabase.realtime.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "supabase.realtime.serviceAccountName" -}}
-{{- if .Values.realtime.serviceAccount.create }}
-{{- default (include "supabase.realtime.fullname" .) .Values.realtime.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.realtime.serviceAccount.name }}
-{{- end }}
-{{- end }}

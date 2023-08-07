@@ -5,7 +5,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "supabase.storage.fullname" . }}-pvc
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
   {{- with .Values.storage.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

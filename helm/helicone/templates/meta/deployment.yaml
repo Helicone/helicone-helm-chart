@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "supabase.meta.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.meta.autoscaling.enabled }}
   replicas: {{ .Values.meta.replicaCount }}
@@ -44,7 +44,7 @@ spec:
             - name: PG_META_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-rds
+                  name: {{ include "helicone.fullname" . }}-postgres
                   key: POSTGRES_PASSWORD
           ports:
             - name: http

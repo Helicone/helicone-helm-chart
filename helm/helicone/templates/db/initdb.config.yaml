@@ -4,7 +4,7 @@ apiVersion: v1
 metadata:
   name: {{ include "supabase.db.fullname" . }}-initdb
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 data:
   01-initial-schema.sql: |
     -- Set up realtime

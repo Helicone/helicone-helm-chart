@@ -30,14 +30,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "supabase.meta.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "supabase.meta.serviceAccountName" -}}
-{{- if .Values.meta.serviceAccount.create }}
-{{- default (include "supabase.meta.fullname" .) .Values.meta.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.meta.serviceAccount.name }}
-{{- end }}
-{{- end }}

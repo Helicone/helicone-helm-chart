@@ -1,6 +1,6 @@
 apiVersion: v2
 name: helicone
-description: Helicone, built on the supabase-kubernetes helm chart
+description: LLM observability stack, based on the Supabase helm chart.
 
 # A chart can be either an 'application' or a 'library' chart.
 #

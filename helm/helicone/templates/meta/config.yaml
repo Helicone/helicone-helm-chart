@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "supabase.meta.fullname" . }}
   labels:
-    {{- include "supabase.labels" . | nindent 4 }}
+    {{- include "helicone.labels" . | nindent 4 }}
 data:
   {{- tpl (toYaml .Values.meta.environment) . | nindent 2 }}
 {{- end }}
