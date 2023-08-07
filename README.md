@@ -36,26 +36,26 @@ git clone https://github.com/helicone/helicone-helm-chart
 # Switch to charts directory
 cd /helicone-helm-chart/helm/helicone
 
-# Create JWT secret
-kubectl -n default create secret generic helicone-demo-supabase \
+# Create Supabase JWT-based secrets
+kubectl -n default create secret generic helicone-supabase \
   --from-literal=ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICAgInJvbGUiOiAiYW5vbiIsCiAgICAiaXNzIjogInN1cGFiYXNlIiwKICAgICJpYXQiOiAxNjc1NDAwNDAwLAogICAgImV4cCI6IDE4MzMxNjY4MDAKfQ.ztuiBzjaVoFHmoljUXWmnuDN6QU2WgJICeqwyzyZO88' \
   --from-literal=SERVICE_ROLE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICAgInJvbGUiOiAic2VydmljZV9yb2xlIiwKICAgICJpc3MiOiAic3VwYWJhc2UiLAogICAgImlhdCI6IDE2NzU0MDA0MDAsCiAgICAiZXhwIjogMTgzMzE2NjgwMAp9.qNsmXzz4tG7eqJPh1Y58DbtIlJBauwpqx39UF-MwM8k' \
   --from-literal=JWT_SECRET='abcdefghijklmnopqrstuvwxyz123456'
 
 # Create SMTP secret
-kubectl -n default create secret generic helicone-demo-smtp \
+kubectl -n default create secret generic helicone-smtp \
   --from-literal=SMTP_USERNAME='your-mail@example.com' \
   --from-literal=SMTP_PASSWORD='example123456'
 
-# Create DB secret
-kubectl -n default create secret generic helicone-demo-postgres \
-  --from-literal=POSTGRES_USERNAME='postgres' \
+# Create postgres secret
+kubectl -n default create secret generic helicone-postgres \
+  --from-literal=POSTGRES_USER='postgres' \
   --from-literal=POSTGRES_PASSWORD='example123456' 
 
 # Create clickhouse secret
-kubectl -n default create secret generic helicone-demo-clickhouse \
-  --from-literal=CLICKHOUSE_USERNAME='default' \
-  --from-literal=CLICKHOUSE_PASSWORD='example123456' 
+kubectl -n default create secret generic helicone-clickhouse \
+  --from-literal=CLICKHOUSE_USER='default' \
+  --from-literal=CLICKHOUSE_PASSWORD='default' 
 
 # Install the chart
 helm -n default install helicone -f values.example.yaml .
