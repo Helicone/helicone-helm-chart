@@ -574,7 +574,7 @@ helicone:
         memory: 10Gi
       requests:
         cpu: 50m
-        memory: 2Gi
+        memory: 128Mi
 
   worker:
     image:
