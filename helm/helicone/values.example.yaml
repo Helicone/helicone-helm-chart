@@ -107,17 +107,23 @@ studio:
     STUDIO_PG_META_URL: 'http://{{ include "supabase.meta.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8080'
     DEFAULT_ORGANIZATION_NAME: "Default Organization"
     DEFAULT_PROJECT_NAME: "Default Project"
-  # volumeMounts:
-  #   - name: volume_name
-  #     mountPath: /path/to/my/secret
-  # volumes:
-  #   - name: volume_name
-  #     secret:
-  #       defaultMode: 733
-  #       secretName: my_secret
-  #       items:
-  #       - key: my_secret.txt
-  #         path: name_of_file_in_container.txt
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    tls: []
+      # - secretName: studio.localhost
+      #   hosts:
+      #     - studio.localhost
+    hosts:
+      - host: studio.localhost
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: api
+              servicePort: 3000
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -490,6 +496,23 @@ kong:
     KONG_PLUGINS: request-transformer,cors,key-auth,acl      
     KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
     KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    tls: []
+      # - secretName: localhost
+      #   hosts:
+      #     - localhost
+    hosts:
+      - host: localhost
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: api
+              servicePort: 80
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -596,17 +619,34 @@ helicone:
       DB_PORT: "{{ tpl .Values.database.port . }}"
       DB_DRIVER: postgres
       DB_NAME: "{{ tpl .Values.database.name . }}"
-    resources: {}
-      # We usually recommend not to specify default resources and to leave this as a conscious
-      # choice for the user. This also increases chances charts run on environments with little
-      # resources, such as Minikube. If you do want to specify resources, uncomment the following
-      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-      # limits:
-      #   cpu: 100m
-      #   memory: 128Mi
-      # requests:
-      #   cpu: 100m
-      #   memory: 128Mi
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+      tls: []
+        # - secretName: helicone.localhost
+        #   hosts:
+        #     - helicone.localhost
+      hosts:
+        - host: helicone.localhost
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                serviceName: api
+                servicePort: 3000
+      resources: {}
+        # We usually recommend not to specify default resources and to leave this as a conscious
+        # choice for the user. This also increases chances charts run on environments with little
+        # resources, such as Minikube. If you do want to specify resources, uncomment the following
+        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+        # limits:
+        #   cpu: 100m
+        #   memory: 128Mi
+        # requests:
+        #   cpu: 100m
+        #   memory: 128Mi
 
   worker:
     image:
@@ -622,17 +662,34 @@ helicone:
     environment:
       SUPABASE_URL: 'http://{{ include "supabase.kong.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8000'
       CLICKHOUSE_HOST: 'http://{{ include "clickhouse.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8123'
-    resources: {}
-      # We usually recommend not to specify default resources and to leave this as a conscious
-      # choice for the user. This also increases chances charts run on environments with little
-      # resources, such as Minikube. If you do want to specify resources, uncomment the following
-      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-      # limits:
-      #   cpu: 100m
-      #   memory: 128Mi
-      # requests:
-      #   cpu: 100m
-      #   memory: 128Mi
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+      tls: []
+        # - secretName: helicone-worker.localhost
+        #   hosts:
+        #     - helicone-worker.localhost
+      hosts:
+        - host: helicone-worker.localhost
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                serviceName: api
+                servicePort: 8787
+      resources: {}
+        # We usually recommend not to specify default resources and to leave this as a conscious
+        # choice for the user. This also increases chances charts run on environments with little
+        # resources, such as Minikube. If you do want to specify resources, uncomment the following
+        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+        # limits:
+        #   cpu: 100m
+        #   memory: 128Mi
+        # requests:
+        #   cpu: 100m
+        #   memory: 128Mi
 
 clickhouse:
   image:
