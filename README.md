@@ -23,51 +23,42 @@ For the moment we are using a root container to permit the installation of the m
 
 The database configuration we provide is an example using only one master. If you want to go to production, we highly recommend you to use a replicated database.
 
-### Secrets 
-
-All secrets are stored in Vault with the structure:
-
-```
-> eks-environment/
-  > ds/ds-helicone/
-    > clickhouse
-    > postgres
-    > s3
-    > smtp
-    > supabase
-```
-
-The `ANON_KEY`, `JWT_SECRET`, and `SERVICE_ROLE_KEY` (under the `supabase` vault entry) were generated using the API KEYS tool at [supabase.com/docs/guides/self-hosting](https://supabase.com/docs/guides/self-hosting).
-
 ## Quickstart
 
 > For this section we're using Minikube and Docker to create a Kubernetes cluster
 
+> The `ANON_KEY`, `JWT_SECRET`, and `SERVICE_ROLE_KEY` (under the `supabase` vault entry) were generated using the API KEYS tool at [supabase.com/docs/guides/self-hosting](https://supabase.com/docs/guides/self-hosting).
+
 ```bash
 # Clone Repository
-git clone https://github.com/supabase-community/supabase-kubernetes
+git clone https://github.com/helicone/helicone-helm-chart
 
 # Switch to charts directory
-cd supabase-kubernetes/charts/supabase/
+cd /helicone-helm-chart/helm/helicone
 
 # Create JWT secret
-kubectl -n default create secret generic demo-supabase-jwt \
-  --from-literal=anonKey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICAgInJvbGUiOiAiYW5vbiIsCiAgICAiaXNzIjogInN1cGFiYXNlIiwKICAgICJpYXQiOiAxNjc1NDAwNDAwLAogICAgImV4cCI6IDE4MzMxNjY4MDAKfQ.ztuiBzjaVoFHmoljUXWmnuDN6QU2WgJICeqwyzyZO88' \
-  --from-literal=serviceKey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICAgInJvbGUiOiAic2VydmljZV9yb2xlIiwKICAgICJpc3MiOiAic3VwYWJhc2UiLAogICAgImlhdCI6IDE2NzU0MDA0MDAsCiAgICAiZXhwIjogMTgzMzE2NjgwMAp9.qNsmXzz4tG7eqJPh1Y58DbtIlJBauwpqx39UF-MwM8k' \
-  --from-literal=secret='abcdefghijklmnopqrstuvwxyz123456'
+kubectl -n default create secret generic helicone-demo-supabase \
+  --from-literal=ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICAgInJvbGUiOiAiYW5vbiIsCiAgICAiaXNzIjogInN1cGFiYXNlIiwKICAgICJpYXQiOiAxNjc1NDAwNDAwLAogICAgImV4cCI6IDE4MzMxNjY4MDAKfQ.ztuiBzjaVoFHmoljUXWmnuDN6QU2WgJICeqwyzyZO88' \
+  --from-literal=SERVICE_ROLE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICAgInJvbGUiOiAic2VydmljZV9yb2xlIiwKICAgICJpc3MiOiAic3VwYWJhc2UiLAogICAgImlhdCI6IDE2NzU0MDA0MDAsCiAgICAiZXhwIjogMTgzMzE2NjgwMAp9.qNsmXzz4tG7eqJPh1Y58DbtIlJBauwpqx39UF-MwM8k' \
+  --from-literal=JWT_SECRET='abcdefghijklmnopqrstuvwxyz123456'
 
 # Create SMTP secret
-kubectl -n default create secret generic demo-supabase-smtp \
-  --from-literal=username='your-mail@example.com' \
-  --from-literal=password='example123456'
+kubectl -n default create secret generic helicone-demo-smtp \
+  --from-literal=SMTP_USERNAME='your-mail@example.com' \
+  --from-literal=SMTP_PASSWORD='example123456'
 
 # Create DB secret
-kubectl -n default create secret generic demo-supabase-db \
-  --from-literal=username='postgres' \
-  --from-literal=password='example123456' 
+kubectl -n default create secret generic helicone-demo-postgres \
+  --from-literal=POSTGRES_USERNAME='postgres' \
+  --from-literal=POSTGRES_PASSWORD='example123456' 
+
+# Create clickhouse secret
+kubectl -n default create secret generic helicone-demo-clickhouse \
+  --from-literal=CLICKHOUSE_USERNAME='default' \
+  --from-literal=CLICKHOUSE_PASSWORD='example123456' 
 
 # Install the chart
-helm -n default install demo -f values.example.yaml .
+helm -n default install helicone -f values.example.yaml .
 ```
 
 The first deployment can take some time to complete (especially auth service). You can view the status of the pods using:
