@@ -56,12 +56,17 @@ db:
     POSTGRES_PORT: "{{ tpl .Values.database.port . }}"
     PGDATABASE: "{{ tpl .Values.database.name . }}"
     POSTGRES_DB: "{{ tpl .Values.database.name . }}"
-  resources:
-  # TODO properly size
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
       cpu: 100m
       memory: 128Mi
   autoscaling:
@@ -115,14 +120,17 @@ studio:
   #       items:
   #       - key: my_secret.txt
   #         path: name_of_file_in_container.txt
-  resources:   
-  # TODO properly size
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -184,15 +192,17 @@ auth:
     GOTRUE_MAILER_URLPATHS_CONFIRMATION: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
     GOTRUE_MAILER_URLPATHS_RECOVERY: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
     GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: "https://supabase.{{ .Values.global.baseDomain }}/auth/v1/verify"
-    
-  resources:     
-    # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -238,14 +248,17 @@ rest:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-  resources:
-  # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -293,14 +306,17 @@ realtime:
     ERL_AFLAGS: -proto_dist inet_tcp
     ENABLE_TAILSCALE: "false"
     DNS_NODES: "''"
-  resources:   
-  # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -353,14 +369,17 @@ meta:
   #       items:
   #       - key: my_secret.txt
   #         path: name_of_file_in_container.txt
-  resources:   
-  # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -411,14 +430,17 @@ storage:
     GLOBAL_S3_BUCKET: stub
     ENABLE_IMAGE_TRANSFORMATION: "true"
     IMGPROXY_URL: 'http://{{ include "supabase.imgproxy.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5001'
-  resources:   
-  # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   persistence:
     enabled: true
     storageClassName: ebs-csi-gp3
@@ -470,14 +492,17 @@ kong:
     KONG_PLUGINS: request-transformer,cors,key-auth,acl      
     KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
     KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
-  resources:   
-  # TODO properly size this
-    limits:
-      cpu: 4
-      memory: 4Gi
-    requests:
-      cpu: 1
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -507,14 +532,17 @@ imgproxy:
     IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
     IMGPROXY_USE_ETAG: "true"
     IMGPROXY_ENABLE_WEBP_DETECTION: "true"
-  resources:   
-  # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
     
 # Functions
 functions:
@@ -537,14 +565,17 @@ functions:
     DB_DRIVER: postgres
     DB_NAME: "{{ tpl .Values.database.name . }}"
     VERIFY_JWT: "false"
-  resources:   
-  # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
 helicone:
   web:
@@ -567,14 +598,17 @@ helicone:
       DB_PORT: "{{ tpl .Values.database.port . }}"
       DB_DRIVER: postgres
       DB_NAME: "{{ tpl .Values.database.name . }}"
-    resources:   
-      # TODO properly size this
-      limits:
-        cpu: 2
-        memory: 10Gi
-      requests:
-        cpu: 50m
-        memory: 128Mi
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
   worker:
     image:
@@ -590,14 +624,17 @@ helicone:
     environment:
       SUPABASE_URL: 'http://{{ include "supabase.kong.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8000'
       CLICKHOUSE_HOST: 'http://{{ include "clickhouse.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8123'
-    resources:     
-    # TODO properly size this
-      limits:
-        cpu: 1
-        memory: 1Gi
-      requests:
-        cpu: 10m
-        memory: 128Mi
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
 
 clickhouse:
   image:
@@ -617,11 +654,14 @@ clickhouse:
   volumes:
     - name: clickhouse
       emptyDir: {}
-  resources:   
-    # TODO properly size this
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 10m
-      memory: 128Mi
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
