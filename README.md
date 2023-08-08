@@ -64,16 +64,22 @@ helm -n default install helicone -f values.example.yaml .
 The first deployment can take some time to complete (especially auth service). You can view the status of the pods using:
 
 ```bash
-kubectl -n default get pod 
+k get pods -n default 
 
-NAME                                      READY   STATUS    RESTARTS      AGE
-demo-supabase-auth-78547c5c8d-chkbm       1/1     Running   2 (40s ago)   47s
-demo-supabase-db-5bc75fbf56-4cxcv         1/1     Running   0             47s
-demo-supabase-kong-8c666695f-5vzwt        1/1     Running   0             47s
-demo-supabase-meta-6779677c7-s77qq        1/1     Running   0             47s
-demo-supabase-realtime-6b55986d7d-csnr7   1/1     Running   0             47s
-demo-supabase-rest-5d864469d-bk5rv        1/1     Running   0             47s
-demo-supabase-storage-6c878dcbd4-zzzcv    1/1     Running   0             47s
+NAME                                                 READY   STATUS    RESTARTS   AGE
+helicone-helicone-auth-547598f79f-rmz5w              1/1     Running   0          45s
+helicone-helicone-clickhouse-6788f7f8db-5rzm4        1/1     Running   0          45s
+helicone-helicone-db-58cdcbd846-bsv9t                1/1     Running   0          45s
+helicone-helicone-functions-779d46964-ztvmc          1/1     Running   0          45s
+helicone-helicone-helicone-web-766c5b47c-9xjx7       1/1     Running   0          45s
+helicone-helicone-helicone-worker-84978c8c8b-nznnl   1/1     Running   0          45s
+helicone-helicone-imgproxy-59bf8f64b9-h479n          1/1     Running   0          45s
+helicone-helicone-kong-7df4bf4f74-z6kfp              1/1     Running   0          45s
+helicone-helicone-meta-7fc4bb6ff9-mxs7c              1/1     Running   0          45s
+helicone-helicone-realtime-74449ff776-4xm9t          1/1     Running   0          45s
+helicone-helicone-rest-645b58894b-6nqld              1/1     Running   0          45s
+helicone-helicone-storage-76f6879895-8cxwb           1/1     Running   0          45s
+helicone-helicone-studio-7b6756bd69-wfzkx            1/1     Running   0          45s
 ```
 
 ### Tunnel with Minikube
@@ -97,12 +103,13 @@ If you just use the `value.example.yaml` file, you can access the API or the Stu
 
 ```Bash
 # Uninstall Helm chart
-helm -n default uninstall demo 
+helm -n default uninstall helicone 
 
 # Delete secrets
-kubectl -n default delete secret demo-supabase-db
-kubectl -n default delete secret demo-supabase-jwt
-kubectl -n default delete secret demo-supabase-smtp
+kubectl -n default delete secret helicone-supabase
+kubectl -n default delete secret helicone-smtp
+kubectl -n default delete secret helicone-postgres
+kubectl -n default delete secret helicone-clickhouse
 ```
 
 ## Customize
