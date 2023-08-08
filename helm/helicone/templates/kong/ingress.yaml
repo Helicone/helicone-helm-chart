@@ -1,5 +1,7 @@
 {{- if .Values.kong.enabled -}}
 {{- if .Values.kong.ingress.enabled -}}
+{{- $fullName := include "supabase.kong.fullname" . -}}
+{{- $svcPort := .Values.kong.service.httpPort -}}
 {{- if and .Values.kong.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.kong.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.kong.ingress.annotations "kubernetes.io/ingress.class" .Values.kong.ingress.className}}
@@ -8,7 +10,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "supabase.kong.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "helicone.labels" . | nindent 4 }}
   {{- with .Values.kong.ingress.annotations }}
@@ -42,12 +44,12 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "supabase.kong.fullname" . }}
+                name: {{ $fullName }}
                 port:
-                  number: {{ .Values.kong.service.port }}
+                  number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ include "supabase.kong.fullname" . }}
-              servicePort: {{ .Values.kong.service.port }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}
     {{- end }}

@@ -1,5 +1,7 @@
 {{- if .Values.studio.enabled -}}
 {{- if .Values.studio.ingress.enabled -}}
+{{- $fullName := include "supabase.studio.fullname" . -}}
+{{- $svcPort := .Values.studio.service.port -}}
 {{- if and .Values.studio.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.studio.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.studio.ingress.annotations "kubernetes.io/ingress.class" .Values.studio.ingress.className}}
@@ -8,7 +10,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "supabase.studio.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "helicone.labels" . | nindent 4 }}
   {{- with .Values.studio.ingress.annotations }}
@@ -42,12 +44,12 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "supabase.studio.fullname" . }}
+                name: {{ $fullName }}
                 port:
-                  number: {{ .Values.studio.service.port }}
+                  number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ include "supabase.studio.fullname" . }}
-              servicePort: {{ .Values.studio.service.port }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}
     {{- end }}

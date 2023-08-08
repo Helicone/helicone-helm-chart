@@ -13,7 +13,7 @@
 # |-- 12. Clickhouse
 
 global:
-  baseDomain: EXAMPLE.COM
+  baseDomain: localhost
   
 database:
   host: '{{ include "supabase.db.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
@@ -506,7 +506,7 @@ kong:
       #   hosts:
       #     - localhost
     hosts:
-      - host: localhost
+      - host: supabase.localhost
         paths:
           - path: /
             pathType: Prefix

@@ -1,4 +1,6 @@
 {{- if .Values.helicone.worker.ingress.enabled -}}
+{{- $fullName := include "helicone.worker.fullname" . -}}
+{{- $svcPort := .Values.helicone.worker.service.port -}}
 {{- if and .Values.helicone.worker.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.helicone.worker.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.helicone.worker.ingress.annotations "kubernetes.io/ingress.class" .Values.helicone.worker.ingress.className}}
@@ -7,7 +9,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "helicone.worker.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "helicone.labels" . | nindent 4 }}
   {{- with .Values.helicone.worker.ingress.annotations }}
@@ -41,14 +43,13 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "helicone.worker.fullname" . }}
+                name: {{ $fullName }}
                 port:
-                  number: {{ .Values.helicone.worker.service.port }}
+                  number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ include "helicone.worker.fullname" . }}
-              servicePort: {{ .Values.helicone.worker.service.port }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}
     {{- end }}
-{{- end }}
 {{- end }}
