@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# ##########################
+# NGINX Setup
+# ##########################
+
+helm install -n kube-system nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx
+
+# ##########################
+# TLS Setup
+# ##########################
+
 # Create tls dir
 mkdir certs
 mkdir keys
