@@ -6,9 +6,9 @@ nginx:
     ./nginx_setup.sh
 
 helicone:
-	helm -n default install helicone -f values.example.yaml .
+	helm upgrade helicone . --install -f values.example.yaml -n default
 
-down:
+uninstall:
 	helm uninstall helicone -n default
 
 
