@@ -5,8 +5,8 @@ nginx:
 
 # install Helicone chart via upgrade in default namespace
 helicone:
-	helm upgrade helicone . --install -f values.example.yaml -n default
+	helm upgrade demo . --install -f values.example.yaml -n default
 
 # uninstall Helicone chart from default namespace
 uninstall:
-	helm uninstall helicone -n default
+	helm uninstall demo -n default

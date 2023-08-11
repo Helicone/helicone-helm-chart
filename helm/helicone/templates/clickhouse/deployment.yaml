@@ -22,12 +22,12 @@ spec:
             - name: CLICKHOUSE_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_USER
             - name: CLICKHOUSE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_PASSWORD
           ports:
             - name: http

@@ -35,22 +35,22 @@ spec:
             - name: SUPABASE_ANON_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: ANON_KEY
             - name: SUPABASE_SERVICE_ROLE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: SERVICE_ROLE_KEY
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: SUPABASE_DB_URL
               value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)

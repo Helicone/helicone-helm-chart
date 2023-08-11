@@ -50,7 +50,7 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
           command: ["/bin/sh", "-c"]
           args:
@@ -77,24 +77,24 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: DATABASE_URL
               value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
             - name: PGRST_JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: JWT_SECRET
             - name: ANON_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: ANON_KEY
             - name: SERVICE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: SERVICE_ROLE_KEY
           ports:
             - name: http

@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "helicone.worker.name" -}}
-{{- default (print .Chart.Name "-helicone-worker") .Values.helicone.worker.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default (print .Chart.Name "-worker") .Values.helicone.worker.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -14,7 +14,7 @@ If release name contains chart name it will be used as a full name.
 {{- if .Values.helicone.worker.fullnameOverride }}
 {{- .Values.helicone.worker.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default (print .Chart.Name "-helicone-worker") .Values.helicone.worker.nameOverride }}
+{{- $name := default (print .Chart.Name "-worker") .Values.helicone.worker.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}

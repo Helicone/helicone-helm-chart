@@ -44,12 +44,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: PGPASSWORD
               value: $(POSTGRES_PASSWORD)

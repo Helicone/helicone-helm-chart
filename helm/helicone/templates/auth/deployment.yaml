@@ -49,7 +49,7 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
           command: ["/bin/sh", "-c"]
           args:
@@ -76,34 +76,34 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: GOTRUE_DB_DATABASE_URL
               value: $(DB_DRIVER)://supabase_auth_admin:$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?search_path=auth&sslmode=$(DB_SSL)
             - name: GOTRUE_JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: JWT_SECRET
             - name: GOTRUE_SMTP_ADMIN_EMAIL
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-smtp
+                  name: {{ include "helicone.name" . }}-smtp
                   key: SMTP_USERNAME
             - name: GOTRUE_SMTP_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-smtp
+                  name: {{ include "helicone.name" . }}-smtp
                   key: SMTP_USERNAME
             - name: GOTRUE_SMTP_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-smtp
+                  name: {{ include "helicone.name" . }}-smtp
                   key: SMTP_PASSWORD
           ports:
             - name: http
