@@ -46,12 +46,12 @@ spec:
             - name: SUPABASE_ANON_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: ANON_KEY
             - name: SUPABASE_SERVICE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: SERVICE_ROLE_KEY
           ports:
             - name: http

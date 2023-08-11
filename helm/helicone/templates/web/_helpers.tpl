@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "helicone.web.name" -}}
-{{- default (print .Chart.Name "-helicone-web") .Values.helicone.web.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default (print .Chart.Name "-web") .Values.helicone.web.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -14,7 +14,7 @@ If release name contains chart name it will be used as a full name.
 {{- if .Values.helicone.web.fullnameOverride }}
 {{- .Values.helicone.web.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default (print .Chart.Name "-helicone-web") .Values.helicone.web.nameOverride }}
+{{- $name := default (print .Chart.Name "-web") .Values.helicone.web.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}

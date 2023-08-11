@@ -58,52 +58,59 @@ kubectl -n default create secret generic helicone-clickhouse \
   --from-literal=CLICKHOUSE_PASSWORD='default' 
 
 # Install the chart
-helm -n default install helicone -f values.example.yaml .
+make helicone
 ```
 
 The first deployment can take some time to complete (especially auth service). You can view the status of the pods using:
 
 ```bash
-k get pods -n default 
+kubectl get pods -n default
 
-NAME                                                 READY   STATUS    RESTARTS   AGE
-helicone-helicone-auth-547598f79f-rmz5w              1/1     Running   0          45s
-helicone-helicone-clickhouse-6788f7f8db-5rzm4        1/1     Running   0          45s
-helicone-helicone-db-58cdcbd846-bsv9t                1/1     Running   0          45s
-helicone-helicone-functions-779d46964-ztvmc          1/1     Running   0          45s
-helicone-helicone-helicone-web-766c5b47c-9xjx7       1/1     Running   0          45s
-helicone-helicone-helicone-worker-84978c8c8b-nznnl   1/1     Running   0          45s
-helicone-helicone-imgproxy-59bf8f64b9-h479n          1/1     Running   0          45s
-helicone-helicone-kong-7df4bf4f74-z6kfp              1/1     Running   0          45s
-helicone-helicone-meta-7fc4bb6ff9-mxs7c              1/1     Running   0          45s
-helicone-helicone-realtime-74449ff776-4xm9t          1/1     Running   0          45s
-helicone-helicone-rest-645b58894b-6nqld              1/1     Running   0          45s
-helicone-helicone-storage-76f6879895-8cxwb           1/1     Running   0          45s
-helicone-helicone-studio-7b6756bd69-wfzkx            1/1     Running   0          45s
+NAME                                       READY   STATUS    RESTARTS   AGE
+demo-helicone-auth-cc7498b64-hrtbx         1/1     Running   0          4m28s
+demo-helicone-clickhouse-f496846fc-pgkbs   1/1     Running   0          4m28s
+demo-helicone-db-6f7959757f-kqbrk          1/1     Running   0          4m27s
+demo-helicone-functions-6b6f8b7975-zjs5b   1/1     Running   0          4m27s
+demo-helicone-imgproxy-5947679bd-v2rr7     1/1     Running   0          4m28s
+demo-helicone-kong-6d4f9b64b4-g87hp        1/1     Running   0          4m28s
+demo-helicone-meta-5bd444855b-whch7        1/1     Running   0          4m28s
+demo-helicone-realtime-6bfc6c8d79-4lj7m    1/1     Running   0          4m28s
+demo-helicone-rest-576f65bc4c-2gf6f        1/1     Running   0          4m28s
+demo-helicone-storage-6cc8d4df96-j9xx4     0/1     Pending   0          4m28s
+demo-helicone-studio-854b565f6b-xs7kn      1/1     Running   0          4m27s
+demo-helicone-web-6bdfc7d7dd-dt2dz         1/1     Running   0          4m28s
+demo-helicone-worker-6c959b77f9-s62lr      1/1     Running   0          4m27s
 ```
 
-### Tunnel with Minikube
+### Ingress Configuration
 
-When the installation will be complete you'll be able to create a tunnel using minikube:
+You'll need to configure an ingress controller if you want to access Helicone via the web browser. We'll use NGINX as a reverse proxy in this demo, but your organization will likely use its own load balancer / ingress. 
+
+Install an [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/) in your local k8s cluster by running:
 
 ```bash
-# First, enable the ingress addon in Minikube
-minikube addons enable ingress
-
-# Then enable the tunnel (will need sudo credentials because you are opening Port 80/443 on your local machine)
-minikube tunnel
+make nginx
 ```
 
-If you just use the `value.example.yaml` file, you can access the API or the Studio App using the following endpoints:
+This will create self-signed SSL certificates for each of the Chart's 4 ingresses (kong, studio, web, and worker) and load them to k8s as tls secrets, referenced by each of the ingress configurations. SSL is required for Supabase's `auth` functionality.  
 
-- <http://api.localhost>
-- <http://studio.localhost>
+Most browsers do not trust self-signed certificates by default. You will need to manually tell your computer to "trust" these certs. 
+
+> For Mac users, manually [add certificates](support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac
+) to your keychain and [make them trusted](support.apple.com/guide/keychain-access/change-the-trust-settings-of-a-certificate-kyca11871/mac).
+
+If you just use the `value.example.yaml` file, you can access the following endpoints:
+
+- Helicone App: <http://helicone.localhost>
+- Helicone Worker: <http://worker.localhost>
+- API: <http://api.localhost>
+- Studio App: <http://studio.localhost>
 
 ### Uninstall
 
 ```Bash
 # Uninstall Helm chart
-helm -n default uninstall helicone 
+make uninstall
 
 # Delete secrets
 kubectl -n default delete secret helicone-supabase
@@ -114,7 +121,7 @@ kubectl -n default delete secret helicone-clickhouse
 
 ## Customize
 
-You should consider to adjust the following values in `values.yaml`:
+You should adjust the following values in `values.yaml`:
 
 - `JWT_SECRET_NAME`: Reference to Kubernetes secret with JWT secret data `secret`, `anonKey` & `serviceKey`
 - `SMTP_SECRET_NAME`: Reference to Kubernetes secret with SMTP credentials `username` & `password`

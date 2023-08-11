@@ -36,7 +36,7 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
           command: ["/bin/sh", "-c"]
           args:
@@ -67,12 +67,12 @@ spec:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: DATABASE_URL
               value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
@@ -92,12 +92,12 @@ spec:
             - name: CLICKHOUSE_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_USER
             - name: CLICKHOUSE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_PASSWORD
           args:
             - 'for file in /app/helicone/clickhouse/migrations/*; do cat "$file" | curl
@@ -121,32 +121,32 @@ spec:
             - name: NEXT_PUBLIC_SUPABASE_ANON_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: ANON_KEY
             - name: SUPABASE_SERVICE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: SERVICE_ROLE_KEY
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-postgres
+                  name: {{ include "helicone.name" . }}-postgres
                   key: POSTGRES_PASSWORD
             - name: CLICKHOUSE_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_USER
             - name: CLICKHOUSE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_PASSWORD
             - name: DATABASE_URL
               value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)

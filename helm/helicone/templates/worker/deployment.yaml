@@ -35,22 +35,22 @@ spec:
             - name: NEXT_PUBLIC_SUPABASE_ANON_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: ANON_KEY
             - name: SUPABASE_SERVICE_ROLE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-supabase
+                  name: {{ include "helicone.name" . }}-supabase
                   key: SERVICE_ROLE_KEY
             - name: CLICKHOUSE_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_USER
             - name: CLICKHOUSE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "helicone.fullname" . }}-clickhouse
+                  name: {{ include "helicone.name" . }}-clickhouse
                   key: CLICKHOUSE_PASSWORD
           ports:
             - name: http
